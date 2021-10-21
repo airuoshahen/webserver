@@ -41,6 +41,17 @@ class RequestHandler(http.server.CGIHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(self.Page.encode('utf-8'))
 
+    def do_POST(self):
+        self.send_response(200)
+        print(self.rfile)
+        with open("test.txt", "a+") as f:
+            f.write(self.rfile)
+            f.close()
+        f = open("test.txt","r")
+        read_buf = f.read()
+        print(read_buf)
+        f.close()
+
 #----------------------------------------------------------------------
 
 if __name__ == '__main__':
