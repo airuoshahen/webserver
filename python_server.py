@@ -1,5 +1,6 @@
 #-*- coding:utf-8 -*-
 import http.server
+import json
 
 # class RequestHandler(http.server.BaseHTTPRequestHandler):
 class RequestHandler(http.server.CGIHTTPRequestHandler):
@@ -24,11 +25,11 @@ class RequestHandler(http.server.CGIHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-Type", "text/html")
         if "test.txt" in self.requestline:
-            with open('test.txt', 'a+') as f:
-                f.write("test")
-                read_buf = f.read()
-                print(read_buf)
-                f.close()
+            # with open('test.txt', 'a+') as f:
+            #     f.write("test")
+            #     read_buf = f.read()
+            #     print(read_buf)
+            #     f.close()
             f = open("test.txt","r")
             read_buf = f.read()
             print(read_buf)
@@ -42,19 +43,31 @@ class RequestHandler(http.server.CGIHTTPRequestHandler):
             self.wfile.write(self.Page.encode('utf-8'))
 
     def do_POST(self):
-        self.send_response(200)
-        print(self.rfile)
+        print(self.headers)
+        print(self.command)
+        read_buf = self.rfile.read(int(self.headers['content-length']))
+        print(read_buf.decode())
         with open("test.txt", "a+") as f:
-            f.write(self.rfile)
+            f.write(read_buf.decode())
             f.close()
         f = open("test.txt","r")
         read_buf = f.read()
         print(read_buf)
         f.close()
+        # data = {
+        #     'result_code': '2',
+        #     'result_desc': 'Success',
+        #     'timestamp': '',
+        #     'data': {'message_id': '25d55ad283aa400af464c76d713c07ad'}
+        # }
+        self.send_response(200)
+        # self.send_header('Content-type', 'application/json')
+        # self.end_headers()
+        # self.wfile.write(json.dumps(data).encode('utf-8'))
 
 #----------------------------------------------------------------------
 
 if __name__ == '__main__':
-    serverAddress = ('', 8080)
+    serverAddress = ('', 70)
     server = http.server.HTTPServer(serverAddress, RequestHandler)
     server.serve_forever()
