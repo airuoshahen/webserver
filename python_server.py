@@ -1,9 +1,11 @@
 #-*- coding:utf-8 -*-
-import http.server
-import json
+import time
+import threading
+from socketserver import ThreadingMixIn
+from http.server import ThreadingHTTPServer, CGIHTTPRequestHandler
 
 # class RequestHandler(http.server.BaseHTTPRequestHandler):
-class RequestHandler(http.server.CGIHTTPRequestHandler):
+class RequestHandler(CGIHTTPRequestHandler):
     '''处理请求并返回页面'''
 
     # 页面模板
@@ -21,7 +23,8 @@ class RequestHandler(http.server.CGIHTTPRequestHandler):
 
     # 处理一个GET请求
     def do_GET(self):
-        
+        message = threading.currentThread().getName()
+        print(message)
         self.send_response(200)
         self.send_header("Content-Type", "text/html")
         if "test.txt" in self.requestline:
@@ -69,5 +72,5 @@ class RequestHandler(http.server.CGIHTTPRequestHandler):
 
 if __name__ == '__main__':
     serverAddress = ('', 70)
-    server = http.server.HTTPServer(serverAddress, RequestHandler)
+    server = ThreadingHTTPServer(serverAddress, RequestHandler)
     server.serve_forever()
